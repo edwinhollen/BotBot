@@ -1,5 +1,3 @@
-package edwinhollen.botbot;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;

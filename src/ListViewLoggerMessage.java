@@ -1,5 +1,3 @@
-package edwinhollen.botbot;
-
 import javafx.scene.paint.Color;
 
 /**
