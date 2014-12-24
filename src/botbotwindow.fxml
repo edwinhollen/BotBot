@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
@@ -43,9 +45,41 @@
                </content>
           </Tab>
           <Tab text="Connection settings">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-            </content>
+               <content>
+                  <Pane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="39.0" prefHeight="15.0" prefWidth="106.0" text="Server" />
+                        <TextField layoutX="14.0" layoutY="14.0" text="irc.twitch.tv" />
+                        <TextField layoutX="185.0" layoutY="14.0" prefHeight="25.0" prefWidth="70.0" text="6667" />
+                        <Label layoutX="185.0" layoutY="39.0" prefHeight="15.0" prefWidth="66.0" text="Port" />
+                        <CheckBox layoutX="266.0" layoutY="18.0" mnemonicParsing="false" text="SSL" />
+                        <TextField layoutX="14.0" layoutY="76.0" />
+                        <Label layoutX="14.0" layoutY="101.0" prefHeight="15.0" prefWidth="71.0" text="Nickname" />
+                        <Label layoutX="183.0" layoutY="81.0" opacity="0.5" prefHeight="15.0" prefWidth="71.0" text="Twitch username">
+                           <font>
+                              <Font size="9.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="320.0" layoutY="15.0" opacity="0.5" prefHeight="23.0" prefWidth="86.0" text="SSL is not yet supported on Twitch" wrapText="true">
+                           <font>
+                              <Font size="9.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="14.0" layoutY="163.0" prefHeight="15.0" prefWidth="71.0" text="Password" />
+                        <TextField layoutX="14.0" layoutY="138.0" />
+                        <Label layoutX="183.0" layoutY="130.0" opacity="0.5" prefHeight="40.0" prefWidth="85.0" text="Twitch requires the password to be an OAuth token" wrapText="true">
+                           <font>
+                              <Font size="9.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="lblGetTwitchOAuthToken" layoutX="274.0" layoutY="143.0" opacity="0.5" text="Get Twitch OAuth token" underline="true">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Label>
+                     </children>
+                  </Pane>
+               </content>
           </Tab>
             <Tab text="Status log">
                <content>
