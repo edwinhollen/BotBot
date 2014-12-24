@@ -44,7 +44,7 @@
                   </BorderPane>
                </content>
           </Tab>
-          <Tab text="Connection settings">
+          <Tab fx:id="tabConnectionSettings" text="Connection settings">
                <content>
                   <Pane prefHeight="200.0" prefWidth="200.0">
                      <children>
