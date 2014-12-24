@@ -8,6 +8,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        System.out.println(getClass().getResource("botbotwindow.fxml"));
         Parent root = FXMLLoader.load(getClass().getResource("botbotwindow.fxml"));
         primaryStage.setTitle("BotBot");
         primaryStage.setScene(new Scene(root));
