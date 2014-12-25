@@ -1,30 +1,19 @@
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
+
+import java.time.LocalDateTime;
 
 /**
  * Created by fubar on 12/23/14.
  */
 public class ListViewLogger {
-    private ListView listView;
-    private ObservableList<Label> messages = FXCollections.observableArrayList();
+    private TextArea logArea;
 
-
-    public ListViewLogger(ListView lv){
-        this.listView = lv;
+    public ListViewLogger(TextArea lv) {
+        this.logArea = lv;
     }
 
-    public void log(String message){
-        this.listView.getItems().add(new LoggerLabel("testing 123", "orange"));
-    }
-
-    private class LoggerLabel extends Label{
-        private final static String FONT = "monospace";
-
-        public LoggerLabel(String message, String color){
-            super(message);
-            this.setStyle(String.format("-fx-text-fill:%s;-fx-font-family:%s;-fx-font-weight:bold;", color, FONT));
-        }
+    public void log(String message) {
+        LocalDateTime now = LocalDateTime.now();
+        this.logArea.appendText(String.format("%s %s \t%s \n", now.toLocalDate(), now.toLocalTime(), message));
     }
 }
