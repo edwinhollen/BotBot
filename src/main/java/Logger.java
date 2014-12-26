@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 /**
  * Created by fubar on 12/23/14.
  */
-public class ListViewLogger {
+public class Logger {
     private TextArea logArea;
 
-    public ListViewLogger(TextArea lv) {
+    public Logger(TextArea lv) {
         this.logArea = lv;
     }
 

@@ -34,14 +34,14 @@ public class Controller implements Initializable {
     PasswordField passPassword;
 
 
-    private ListViewLogger logger;
+    private Logger logger;
     private BotBot botbot;
     private Preferences prefs;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         prefs = Preferences.userRoot();
-        logger = new ListViewLogger(txtaStatusLog);
+        logger = new Logger(txtaStatusLog);
         botbot = new BotBot();
 
         // load previous settings
