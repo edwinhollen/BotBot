@@ -51,7 +51,7 @@ public class Controller implements Initializable {
         passPassword.setText(prefs.get("password", null));
         chkSavePassword.setSelected(prefs.getBoolean("savePassword", false));
         // load previous channel list
-        for(String channel : prefs.get("channels", "").split(",")){
+        for (String channel : prefs.get("channels", "").split(",")) {
             listChannels.getItems().add(new Label(channel));
         }
 
@@ -73,32 +73,32 @@ public class Controller implements Initializable {
             prefs.put("nickname", txtNickname.getText().trim());
         });
 
-        txtNickname.focusedProperty().addListener((listener, oldVal, newVal) ->{
-            if(oldVal){
+        txtNickname.focusedProperty().addListener((listener, oldVal, newVal) -> {
+            if (oldVal) {
                 txtNickname.setText(txtNickname.getText().trim());
             }
         });
 
-        passPassword.textProperty().addListener(listener ->{
-            if(prefs.getBoolean("savePassword", false)){
+        passPassword.textProperty().addListener(listener -> {
+            if (prefs.getBoolean("savePassword", false)) {
                 prefs.put("password", passPassword.getText());
             }
         });
 
-        txtServer.textProperty().addListener(listener ->{
+        txtServer.textProperty().addListener(listener -> {
             prefs.put("server", txtServer.getText());
         });
-        txtPort.textProperty().addListener(listener ->{
+        txtPort.textProperty().addListener(listener -> {
             prefs.put("port", txtPort.getText());
         });
 
         txtAddChannel.setOnAction(event -> btnAddChannel.fire());
 
-        chkSavePassword.setOnAction(event ->{
+        chkSavePassword.setOnAction(event -> {
             prefs.putBoolean("savePassword", chkSavePassword.isSelected());
         });
 
-        chkSSL.setOnAction(event ->{
+        chkSSL.setOnAction(event -> {
             prefs.putBoolean("SSL", chkSSL.isSelected());
         });
 
@@ -120,19 +120,26 @@ public class Controller implements Initializable {
             checkChannelList();
         });
 
-        listChannels.getItems().addListener((ListChangeListener<? super Label>) listener ->{
+        listChannels.getItems().addListener((ListChangeListener<? super Label>) listener -> {
             String csv = "";
-            for(Label l : listChannels.getItems()){
+            for (Label l : listChannels.getItems()) {
                 csv = csv.concat(l.getText() + ",");
             }
-            csv = csv.substring(0, csv.length()-1);
+            csv = csv.substring(0, csv.length() - 1);
             prefs.put("channels", csv);
         });
 
         btnConnect.setOnAction(event -> {
-
-            //botbot.connect(txtNickname.getText(), txtServer.getText(), txtPassword.getText(), );
+            botbot.connect(
+                    prefs.get("nickname", txtNickname.getText()),
+                    prefs.get("server", txtServer.getText()),
+                    prefs.get("password", passPassword.getText()),
+                    prefs.get("channels", "").split(",")
+            );
         });
+
+        // binding for BotBot variables
+
 
         logger.log("GUI initialization finished");
     }

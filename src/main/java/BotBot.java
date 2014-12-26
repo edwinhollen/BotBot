@@ -3,30 +3,27 @@ import org.pircbotx.PircBotX;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 
-import java.util.ArrayList;
-
 /**
  * Created by fubar on 12/24/14.
  */
 public class BotBot {
-    private ArrayList<String> channels;
-
     public BotBot() {
-        channels = new ArrayList<>();
+
     }
 
-    public void connect(String nick, String server, String password, ArrayList<String> channels) {
+    public void connect(String nick, String server, String password, String[] channels) {
         // config
-        Configuration config = new Configuration.Builder()
-                .setName(nick)
-                .setServerHostname(server)
-                .setServerPassword(password)
-                .addAutoJoinChannel("ok")
-                .addListener(new BotBotListener())
-                .buildConfiguration();
-
+        Configuration.Builder config = new Configuration.Builder();
+        config.setName(nick);
+        config.setServerHostname(server);
+        config.setServerPassword(password);
+        config.addListener(new BotBotListener());
+        for (String channel : channels) {
+            config.addAutoJoinChannel(channel);
+        }
         System.out.println(config.getAutoJoinChannels().toString());
-        PircBotX bot = new PircBotX(config);
+
+        PircBotX bot = new PircBotX(config.buildConfiguration());
 
         // connect to server
         /*try {
@@ -36,14 +33,6 @@ public class BotBot {
         } catch (IrcException e) {
             e.printStackTrace();
         }*/
-    }
-
-    public void addChannel(String c) {
-        channels.add(c);
-    }
-
-    public void removeChannel(String c) {
-        channels.remove(c);
     }
 
     private class BotBotListener extends ListenerAdapter {
