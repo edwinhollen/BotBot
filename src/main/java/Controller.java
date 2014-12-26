@@ -1,3 +1,4 @@
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class Controller implements Initializable {
     @FXML
@@ -23,22 +25,36 @@ public class Controller implements Initializable {
     @FXML
     Tab tabConnectionSettings;
     @FXML
-    TextField txtNickname, txtServer, txtPort, txtPassword, txtAddChannel;
+    TextField txtNickname, txtServer, txtPort, txtAddChannel;
     @FXML
-    CheckBox chkSSL;
+    CheckBox chkSSL, chkSavePassword;
     @FXML
     TextArea txtaStatusLog;
+    @FXML
+    PasswordField passPassword;
 
 
     private ListViewLogger logger;
     private BotBot botbot;
+    private Preferences prefs;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        prefs = Preferences.userRoot();
         logger = new ListViewLogger(txtaStatusLog);
         botbot = new BotBot();
 
         // load previous settings
+        txtNickname.setText(prefs.get("nickname", null));
+        txtServer.setText(prefs.get("server", null));
+        txtPort.setText(prefs.get("port", null));
+        passPassword.setText(prefs.get("password", null));
+        chkSavePassword.setSelected(prefs.getBoolean("savePassword", false));
+        // load previous channel list
+        for(String channel : prefs.get("channels", "").split(",")){
+            listChannels.getItems().add(new Label(channel));
+        }
+
 
         // check channel list
         checkChannelList();
@@ -53,7 +69,38 @@ public class Controller implements Initializable {
             });
         });
 
+        txtNickname.textProperty().addListener(listener -> {
+            prefs.put("nickname", txtNickname.getText().trim());
+        });
+
+        txtNickname.focusedProperty().addListener((listener, oldVal, newVal) ->{
+            if(oldVal){
+                txtNickname.setText(txtNickname.getText().trim());
+            }
+        });
+
+        passPassword.textProperty().addListener(listener ->{
+            if(prefs.getBoolean("savePassword", false)){
+                prefs.put("password", passPassword.getText());
+            }
+        });
+
+        txtServer.textProperty().addListener(listener ->{
+            prefs.put("server", txtServer.getText());
+        });
+        txtPort.textProperty().addListener(listener ->{
+            prefs.put("port", txtPort.getText());
+        });
+
         txtAddChannel.setOnAction(event -> btnAddChannel.fire());
+
+        chkSavePassword.setOnAction(event ->{
+            prefs.putBoolean("savePassword", chkSavePassword.isSelected());
+        });
+
+        chkSSL.setOnAction(event ->{
+            prefs.putBoolean("SSL", chkSSL.isSelected());
+        });
 
         btnAddChannel.setOnAction(event -> {
             String newChannel = txtAddChannel.getText().trim();
@@ -71,6 +118,15 @@ public class Controller implements Initializable {
         btnRemoveChannel.setOnAction(event -> {
             listChannels.getItems().remove(listChannels.getFocusModel().getFocusedIndex());
             checkChannelList();
+        });
+
+        listChannels.getItems().addListener((ListChangeListener<? super Label>) listener ->{
+            String csv = "";
+            for(Label l : listChannels.getItems()){
+                csv = csv.concat(l.getText() + ",");
+            }
+            csv = csv.substring(0, csv.length()-1);
+            prefs.put("channels", csv);
         });
 
         btnConnect.setOnAction(event -> {
