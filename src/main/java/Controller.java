@@ -1,4 +1,5 @@
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -6,12 +7,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import org.apache.commons.lang3.ObjectUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
@@ -44,21 +47,8 @@ public class Controller implements Initializable {
         logger = new Logger(txtaStatusLog);
         botbot = new BotBot();
 
-        // load previous settings
-        txtNickname.setText(prefs.get("nickname", null));
-        txtServer.setText(prefs.get("server", null));
-        txtPort.setText(prefs.get("port", null));
-        passPassword.setText(prefs.get("password", null));
-        chkSavePassword.setSelected(prefs.getBoolean("savePassword", false));
-        // load previous channel list
-        for (String channel : prefs.get("channels", "").split(",")) {
-            listChannels.getItems().add(new Label(channel));
-        }
 
-
-        // check channel list
-        checkChannelList();
-
+        // set event listeners
         lblGetTwitchOAuthToken.setOnMouseClicked(event -> {
             SwingUtilities.invokeLater(() -> {
                 try {
@@ -96,6 +86,7 @@ public class Controller implements Initializable {
 
         chkSavePassword.setOnAction(event -> {
             prefs.putBoolean("savePassword", chkSavePassword.isSelected());
+            passPassword.textProperty().setValue(passPassword.textProperty().getValue());
         });
 
         chkSSL.setOnAction(event -> {
@@ -106,27 +97,39 @@ public class Controller implements Initializable {
             String newChannel = txtAddChannel.getText().trim();
             newChannel = newChannel.replace("#", "");
 
-            if (newChannel.isEmpty() || newChannel.contains(" ")) return;
+            if (newChannel.isEmpty() || newChannel.contains(" ")){
+                txtAddChannel.requestFocus();
+                return;
+            }
 
             listChannels.getItems().add(new Label(newChannel));
             txtAddChannel.clear();
             txtAddChannel.requestFocus();
-
-            checkChannelList();
         });
 
         btnRemoveChannel.setOnAction(event -> {
             listChannels.getItems().remove(listChannels.getFocusModel().getFocusedIndex());
-            checkChannelList();
+            listChannels.getFocusModel().focus(0);
+            if(listChannels.getItems().isEmpty()){
+                btnRemoveChannel.setDisable(true);
+            }
         });
 
         listChannels.getItems().addListener((ListChangeListener<? super Label>) listener -> {
-            String csv = "";
-            for (Label l : listChannels.getItems()) {
-                csv = csv.concat(l.getText() + ",");
+            if(!listChannels.getItems().isEmpty()){
+                String csv = "";
+                for (Label l : listChannels.getItems()) {
+                    csv = csv.concat(l.getText() + ",");
+                }
+                csv = csv.substring(0, csv.length() - 1);
+                prefs.put("channels", csv);
+            }else{
+                prefs.put("channels", "");
             }
-            csv = csv.substring(0, csv.length() - 1);
-            prefs.put("channels", csv);
+        });
+
+        listChannels.getFocusModel().focusedIndexProperty().addListener(listener ->{
+            btnRemoveChannel.setDisable(false);
         });
 
         btnConnect.setOnAction(event -> {
@@ -138,14 +141,24 @@ public class Controller implements Initializable {
             );
         });
 
-        // binding for BotBot variables
-
+        // load previous settings
+        txtNickname.setText(prefs.get("nickname", null));
+        txtServer.setText(prefs.get("server", null));
+        txtPort.setText(prefs.get("port", null));
+        chkSavePassword.setSelected(prefs.getBoolean("savePassword", false));
+        if(prefs.getBoolean("savePassword", false)){
+            passPassword.setText(prefs.get("password", null));
+        }else{
+            passPassword.setText("");
+            prefs.put("password", "");
+        }
+        // load previous channel list
+        if(!prefs.get("channels", "").isEmpty()){
+            for (String channel : prefs.get("channels", "").split(",")) {
+                listChannels.getItems().add(new Label(channel));
+            }
+        }
 
         logger.log("GUI initialization finished");
-    }
-
-    private void checkChannelList() {
-        btnRemoveChannel.setDisable(listChannels.getItems().size() < 1);
-
     }
 }
